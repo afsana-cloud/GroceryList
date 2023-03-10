@@ -14,11 +14,11 @@ struct GroceryModel:Identifiable{
 }
 
 enum GroceryCategory:String,CaseIterable{
-    case fruits
-    case vegetables
-    case dairyProducts
-    case snacks
-    case instantFood
+    case fruits = "Fruits"
+    case vegetables = "Vegetables"
+    case dairyProducts = "Dairy Products"
+    case snacks = "Snacks"
+    case instantFood = "Instant Food"
     
     var categoryList:[String]{
         switch self {
@@ -29,12 +29,26 @@ enum GroceryCategory:String,CaseIterable{
         case .dairyProducts:
             return ["Milk","Bread","Paneer","Wheat Bread","Eggs"]
         case .snacks:
-            return ["Biscuits","chips","Fench fries","Nuggets","Puffs"]
+            return ["Biscuits","chips","French fries","Nuggets","Puffs"]
         case .instantFood:
             return ["Noodles","Maggi","Peanut butter","Pizza","Burger"]
         }
-        return [""]
     }
+    var sectionName:String{
+        switch self {
+        case .fruits:
+            return "Fruits"
+        case .vegetables:
+            return "Vegetables"
+        case .dairyProducts:
+            return "Dairy Products "
+        case .snacks:
+            return "Snacks"
+        case .instantFood:
+            return "Instant food"
+        }
+    }
+    
 }
 
 extension View {
@@ -53,5 +67,19 @@ extension View {
             self.listStyle(.inset)
         }
         
+    }
+}
+
+struct GroceryItem: Hashable, Identifiable, CustomStringConvertible {
+    var id: Self { self }
+    var name: String
+    var children: [GroceryItem]? = nil
+    var description: String {
+        switch children {
+        case nil:
+            return "\(name)"
+        case .some(let children):
+            return children.isEmpty ? "\(name)" : "\(name)"
+        }
     }
 }
