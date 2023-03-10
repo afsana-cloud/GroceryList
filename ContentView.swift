@@ -8,20 +8,62 @@
 import SwiftUI
 
 struct GroceryListView: View {
-    var model:GroceryModel = GroceryModel(categories: GroceryCategory.allCases)
+   @State var model:GroceryModel = GroceryModel(categories: GroceryCategory.allCases)
+    @State var cats:[GroceryItem]  = [
+        GroceryItem(name: "Fruits", children:
+          [GroceryItem(name: "Apple", children:
+            [GroceryItem(name: "Green apple", children:nil),
+             GroceryItem(name: "Kashmir apple", children:nil)])
+            ]),
+        GroceryItem(name: "Vegetables", children:
+          [GroceryItem(name: "Tomato", children:
+            [GroceryItem(name: "Red Tomato", children:nil),
+             GroceryItem(name: "Green Tomato", children:nil)])
+            ]),
+      ]
+    @State var isHierarychy:Bool = false
 
     var body: some View {
         NavigationView {
-            List{
-                ForEach(model.categories,id: \.self){ data in
-                    NavigationLink(destination: GroceryDetailView(categoryName: data)){
-                        Section{
-                            Text(data.rawValue)
+            if isHierarychy{
+                List(cats, children: \.children) { item in
+                    Text(item.description)
+                }.listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+            }else{
+                List{
+                    ForEach(model.categories,id: \.self){ data in
+                        if isHierarychy{
+
+                        }else{
+                            NavigationLink(destination: GroceryDetailView(categoryName: data)){
+                                Section{
+                                    Text(data.rawValue)
+                                }
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button {
+                                    self.removeVal(cat: data)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                .tint(.red)
+                            }
                         }
+
+                    }
+                }.navigationTitle("Grocery List")
+                    .toolbar {
+                        Toggle(isOn: $isHierarychy) {
+                            Text("Show as Hierarychy")
                     }
                 }
-            }.navigationTitle("Grocery List")
-                .listStyle(.plain)
+            }
+        }
+    }
+
+    func removeVal(cat:GroceryCategory){
+        self.model.categories.removeAll { xcat in
+            xcat == cat
         }
     }
 }
@@ -39,14 +81,8 @@ struct GroceryDetailView:View{
                     Text(data)
                 }
             }
-        }.groceryListStyle(catName: categoryName)
+        }
+        .groceryListStyle(catName: categoryName)
     }
 }
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        GroceryListView()
-    }
-}
-
 
